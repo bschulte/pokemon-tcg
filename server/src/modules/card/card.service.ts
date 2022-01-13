@@ -23,6 +23,7 @@ export const searchCards = async (searchParams: CardSearchParams) => {
         }
       }
 
+      // Body text
       if (searchParams.bodyText) {
         const ruleFilter = searchParams.bodyText.toLowerCase();
         console.log('rule filter:', ruleFilter);
@@ -49,6 +50,19 @@ export const searchCards = async (searchParams: CardSearchParams) => {
           .some((text) => text.includes(ruleFilter));
 
         console.log('Texts', bodySectionTexts);
+
+        if (!hasMatch) {
+          continue;
+        }
+      }
+
+      // Legalities
+      if (searchParams.legalities) {
+        const legalities = searchParams.legalities.split(',');
+        console.log('Card legals:', card.legalities);
+        const hasMatch = legalities.some((legality) =>
+          Boolean(card.legalities[legality.toLowerCase()]),
+        );
 
         if (!hasMatch) {
           continue;
