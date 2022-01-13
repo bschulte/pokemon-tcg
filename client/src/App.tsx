@@ -9,7 +9,7 @@ import { CardSearch } from "./pages/CardSearch";
 export default function App() {
   return (
     <Container maxWidth="lg">
-      <AppBar position="static">
+      <AppBar position="static" sx={{ marginBottom: 2 }}>
         <Box sx={{ flexGrow: 1, display: "flex", padding: 2 }}>
           <Button href="/" sx={{ color: "white" }}>
             Home
