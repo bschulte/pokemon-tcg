@@ -1,4 +1,11 @@
-import { Divider, Grid, TextField, Typography } from "@mui/material";
+import {
+  Divider,
+  Grid,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import React, { useState } from "react";
@@ -8,6 +15,8 @@ import { CardResults } from "../components/CardResults";
 export const CardSearch = () => {
   const [name, setName] = useState("");
   const [bodyText, setBodyText] = useState("");
+  const [formats, setFormats] = useState(["Standard", "Extended", "Unlimited"]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [results, setResults] = useState<Card[]>([]);
@@ -16,7 +25,9 @@ export const CardSearch = () => {
     console.log("Performing search");
     setIsLoading(true);
 
-    const response = await fetch(`/cards?name=${name}&bodyText=${bodyText}`);
+    const response = await fetch(
+      `/cards?name=${name}&bodyText=${bodyText}&legalities=${formats.join(",")}`
+    );
     const cards = await response.json();
     setResults(cards);
 
@@ -44,6 +55,17 @@ export const CardSearch = () => {
             value={bodyText}
             onChange={(e) => setBodyText(e.target.value)}
           />
+        </Grid>
+
+        <Grid item>
+          <ToggleButtonGroup
+            value={formats}
+            onChange={(_event, newFormats) => setFormats(newFormats)}
+          >
+            <ToggleButton value="Standard">Standard</ToggleButton>
+            <ToggleButton value="Extended">Extended</ToggleButton>
+            <ToggleButton value="Unlimited">Unlimited</ToggleButton>
+          </ToggleButtonGroup>
         </Grid>
       </Grid>
 
