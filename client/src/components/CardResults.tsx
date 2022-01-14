@@ -19,7 +19,7 @@ export const CardResults = ({ cards }: IProps) => {
     <Grid container spacing={1} justifyContent="center">
       {cards.map((card) => (
         <Grid item key={card.id}>
-          <img src={card.images.small} />
+          <img src={card.imageSmall} />
         </Grid>
       ))}
     </Grid>

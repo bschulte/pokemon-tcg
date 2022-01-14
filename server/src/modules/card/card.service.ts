@@ -1,81 +1,62 @@
-import fs from 'fs-extra';
-import { Card } from '../../../../shared/interfaces/card.dto';
+import { Card } from '@prisma/client';
 import { CardSearchParams } from '../../../../shared/interfaces/cardSearchParams.dto';
+import { prisma } from '../../client';
 
-export const searchCards = async (searchParams: CardSearchParams) => {
+export const searchCards = async (
+  searchParams: CardSearchParams,
+): Promise<Card[]> => {
   console.log('Search params:', searchParams);
-  const setJsonFiles = fs.readdirSync('./data/cards/en');
 
-  const results: Card[] = [];
+  const cardWhereClause: any = {};
+  let attackWhereClause = null;
+  let abilityWhereClause = null;
+  let ruleWhereClause = null;
 
-  for (const setFile of setJsonFiles) {
-    const cards: Card[] = JSON.parse(
-      await fs.readFile(`./data/cards/en/${setFile}`, 'utf-8'),
-    );
-
-    for (const card of cards) {
-      // Conditionally check each filter available
-      if (searchParams.name) {
-        if (
-          !card.name.toLowerCase().includes(searchParams.name.toLowerCase())
-        ) {
-          continue;
-        }
-      }
-
-      // Body text
-      if (searchParams.bodyText) {
-        const ruleFilter = searchParams.bodyText.toLowerCase();
-
-        let bodySectionTexts: string[] = [];
-        if (card.rules) {
-          bodySectionTexts = bodySectionTexts.concat(card.rules);
-        }
-        if (card.abilities) {
-          bodySectionTexts = bodySectionTexts.concat(
-            card.abilities.map((ability) => ability.text),
-          );
-        }
-        if (card.attacks) {
-          bodySectionTexts = bodySectionTexts.concat(
-            card.attacks
-              .map((attack) => attack.text)
-              .filter((text) => Boolean(text)),
-          );
-        }
-
-        const hasMatch = bodySectionTexts
-          .map((text) => text.toLowerCase())
-          .some((text) => text.includes(ruleFilter));
-
-        if (!hasMatch) {
-          continue;
-        }
-      }
-
-      // Legalities
-      if (searchParams.legalities) {
-        const legalities = searchParams.legalities.split(',');
-        const hasMatch = legalities.some((legality) =>
-          Boolean(card.legalities[legality.toLowerCase()]),
-        );
-
-        if (!hasMatch) {
-          continue;
-        }
-      }
-
-      results.push(card);
-
-      if (results.length >= 20) {
-        break;
-      }
-    }
-
-    if (results.length >= 20) {
-      break;
-    }
+  if (searchParams.name) {
+    cardWhereClause.name = { contains: searchParams.name, mode: 'insensitive' };
   }
 
-  return results;
+  if (searchParams.bodyText) {
+    attackWhereClause = {
+      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+    };
+    abilityWhereClause = {
+      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+    };
+    ruleWhereClause = {
+      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+    };
+  }
+
+  const query: any = {
+    where: cardWhereClause,
+    take: 20,
+  };
+
+  if (attackWhereClause) {
+    query.select = {
+      ...query.select,
+      attacks: {
+        where: attackWhereClause,
+      },
+    };
+  }
+  if (abilityWhereClause) {
+    query.select = {
+      ...query.select,
+      attacks: {
+        where: abilityWhereClause,
+      },
+    };
+  }
+  if (ruleWhereClause) {
+    query.select = {
+      ...query.select,
+      attacks: {
+        where: ruleWhereClause,
+      },
+    };
+  }
+
+  return prisma.card.findMany(query);
 };

@@ -21,6 +21,7 @@ async function main() {
       await prisma.card.create({
         data: {
           ptcgoId: card.id,
+          set: card.id.split('-')[0],
           name: card.name,
           supertype: card.supertype,
           imageSmall: card.images.small,
@@ -28,7 +29,9 @@ async function main() {
           hp: card.hp,
           subtypes: card.subtypes,
           types: card.types,
-          rules: card.rules,
+          rules: {
+            create: card.rules?.map((ruleText) => ({ text: ruleText })),
+          },
           weaknesses: card.weaknesses,
           retreatCost: card.retreatCost,
           convertedRetreatCost: card.convertedRetreatCost,

@@ -23,6 +23,10 @@ interface Abilities {
   type: string;
 }
 
+interface Rule {
+  text: string;
+}
+
 export interface Card {
   id: string;
   name: string;
@@ -30,7 +34,7 @@ export interface Card {
   subtypes: string[];
   hp?: string;
   types?: string[];
-  rules: string[];
+  rules: Rule[];
 
   attacks?: Attack[];
   weaknesses?: string[];
@@ -39,7 +43,8 @@ export interface Card {
   number: string;
   artist: string;
   nationalPokedexNumbers?: number[];
-  legalities: Legality;
-  images: Images;
+  legalities: string[];
+  imageSmall: string;
+  imageLarge: string;
   abilities?: Abilities[];
 }

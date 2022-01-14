@@ -12,13 +12,14 @@ datasource db {
 
 model Card {
   id        Int      @id @default(autoincrement())
+  set       String
   ptcgoId   String
   name      String
   supertype String
   subtypes  String[]
   hp        String?
   types     String[]
-  rules     String[]
+  rules     Rule[]
   createdAt DateTime @default(now()) @db.Timestamp(6)
 
   attacks                Attack[]
@@ -51,5 +52,13 @@ model Ability {
   text   String
   type   String
   card   Card   @relation(fields: [cardId], references: [id])
+  cardId Int
+}
+
+model Rule {
+  id   Int    @id @default(autoincrement())
+  text String
+
+  card   Card @relation(fields: [cardId], references: [id])
   cardId Int
 }
