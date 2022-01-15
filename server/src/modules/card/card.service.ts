@@ -12,10 +12,12 @@ export const searchCards = async (
   let abilityWhereClause = null;
   let ruleWhereClause = null;
 
+  // Name search
   if (searchParams.name) {
     whereClause.name = { contains: searchParams.name, mode: 'insensitive' };
   }
 
+  // Body text search
   if (searchParams.bodyText) {
     attackWhereClause = {
       attacks: {
@@ -42,6 +44,16 @@ export const searchCards = async (
     whereClause = {
       ...whereClause,
       OR: [attackWhereClause, abilityWhereClause, ruleWhereClause],
+    };
+  }
+
+  // Legalities
+  if (searchParams.legalities) {
+    whereClause = {
+      ...whereClause,
+      legalities: {
+        hasSome: searchParams.legalities.split(',').map((l) => l.toLowerCase()),
+      },
     };
   }
 
