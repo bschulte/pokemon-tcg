@@ -7,56 +7,55 @@ export const searchCards = async (
 ): Promise<Card[]> => {
   console.log('Search params:', searchParams);
 
-  const cardWhereClause: any = {};
+  let whereClause: any = {};
   let attackWhereClause = null;
   let abilityWhereClause = null;
   let ruleWhereClause = null;
 
   if (searchParams.name) {
-    cardWhereClause.name = { contains: searchParams.name, mode: 'insensitive' };
+    whereClause.name = { contains: searchParams.name, mode: 'insensitive' };
   }
 
   if (searchParams.bodyText) {
     attackWhereClause = {
-      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+      attacks: {
+        some: {
+          text: { contains: searchParams.bodyText, mode: 'insensitive' },
+        },
+      },
     };
     abilityWhereClause = {
-      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+      abilities: {
+        some: {
+          text: { contains: searchParams.bodyText, mode: 'insensitive' },
+        },
+      },
     };
     ruleWhereClause = {
-      text: { contains: searchParams.bodyText, mode: 'insensitive' },
+      rules: {
+        some: {
+          text: { contains: searchParams.bodyText, mode: 'insensitive' },
+        },
+      },
+    };
+
+    whereClause = {
+      ...whereClause,
+      OR: [attackWhereClause, abilityWhereClause, ruleWhereClause],
     };
   }
 
   const query: any = {
-    where: cardWhereClause,
+    where: whereClause,
+    include: {
+      attacks: true,
+      abilities: true,
+      rules: true,
+    },
     take: 20,
   };
 
-  if (attackWhereClause) {
-    query.select = {
-      ...query.select,
-      attacks: {
-        where: attackWhereClause,
-      },
-    };
-  }
-  if (abilityWhereClause) {
-    query.select = {
-      ...query.select,
-      attacks: {
-        where: abilityWhereClause,
-      },
-    };
-  }
-  if (ruleWhereClause) {
-    query.select = {
-      ...query.select,
-      attacks: {
-        where: ruleWhereClause,
-      },
-    };
-  }
+  console.log('Query:', JSON.stringify(query, null, 2));
 
   return prisma.card.findMany(query);
 };

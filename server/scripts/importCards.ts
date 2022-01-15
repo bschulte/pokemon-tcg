@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import { Card } from '../../shared/interfaces/card.dto';
 import { prisma } from '../src/client';
 
 const DATA_DIR = `${__dirname}/../data/cards/en`;
@@ -8,7 +7,7 @@ async function main() {
   const setJsonFiles = await fs.readdir(DATA_DIR);
 
   for (const setFile of setJsonFiles) {
-    const cards: Card[] = JSON.parse(
+    const cards: any[] = JSON.parse(
       await fs.readFile(`${DATA_DIR}/${setFile}`, 'utf-8'),
     );
 
