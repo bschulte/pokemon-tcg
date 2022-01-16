@@ -57,6 +57,13 @@ export const searchCards = async (
     };
   }
 
+  if (searchParams.sets) {
+    whereClause = {
+      ...whereClause,
+      OR: searchParams.sets.split(',').map((set) => ({ set })),
+    };
+  }
+
   const query: any = {
     where: whereClause,
     include: {

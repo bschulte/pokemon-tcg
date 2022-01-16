@@ -29,6 +29,8 @@ interface Rule {
 
 export interface Card {
   id: string;
+  ptcgoId: string;
+  set: string;
   name: string;
   supertype: string;
   subtypes: string[];
